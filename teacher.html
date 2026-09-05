@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Dashboard · Year 6 Arcade</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI','Trebuchet MS',Verdana,sans-serif;background:#f4f6fb;color:#243044;
+    min-height:100vh;padding:22px 16px 60px;}
+  .wrap{max-width:1060px;margin:0 auto;}
+  header{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;margin-bottom:4px;}
+  h1{font-size:26px;font-weight:800;color:#2b3a55;}
+  .sub{color:#7a8699;font-size:14px;font-weight:600;}
+  a.backlink{color:#4a6cf7;font-size:13px;font-weight:700;text-decoration:none;margin-left:auto;}
+
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0;align-items:center;}
+  select,.cbtn{font-family:inherit;font-weight:700;font-size:14px;padding:9px 14px;border-radius:10px;
+    border:1.5px solid #d6ddeb;background:#fff;color:#2b3a55;cursor:pointer;}
+  .cbtn.primary{background:#4a6cf7;border-color:#4a6cf7;color:#fff;}
+  .cbtn:active{transform:scale(.97);}
+  .range{display:flex;background:#fff;border:1.5px solid #d6ddeb;border-radius:10px;overflow:hidden;}
+  .range button{font-family:inherit;font-weight:700;font-size:13px;padding:9px 14px;border:0;
+    background:none;color:#7a8699;cursor:pointer;}
+  .range button.on{background:#4a6cf7;color:#fff;}
+
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+  @media(max-width:760px){.cards{grid-template-columns:repeat(2,1fr);}}
+  .kpi{background:#fff;border:1.5px solid #e4e9f4;border-radius:14px;padding:14px 16px;}
+  .kpi .n{font-size:26px;font-weight:900;color:#2b3a55;}
+  .kpi .l{font-size:11px;font-weight:800;color:#8b96ab;letter-spacing:.06em;margin-top:2px;}
+
+  .panel{background:#fff;border:1.5px solid #e4e9f4;border-radius:14px;padding:16px 18px;margin-bottom:16px;}
+  .panel h2{font-size:15px;font-weight:800;color:#2b3a55;margin-bottom:10px;}
+  .panel .hint{font-size:12px;color:#8b96ab;font-weight:600;margin-top:-6px;margin-bottom:10px;}
+
+  table.students{width:100%;border-collapse:collapse;font-size:14px;}
+  table.students th{text-align:left;font-size:11px;letter-spacing:.06em;color:#8b96ab;font-weight:800;
+    padding:8px;border-bottom:2px solid #e4e9f4;cursor:pointer;user-select:none;white-space:nowrap;}
+  table.students th .arr{font-size:10px;}
+  table.students td{padding:9px 8px;border-bottom:1px solid #eef1f8;font-weight:600;white-space:nowrap;}
+  table.students tbody tr{cursor:pointer;}
+  table.students tbody tr:hover{background:#f4f7ff;}
+  table.picks tbody tr{cursor:default;}
+  table.picks tbody tr:hover{background:transparent;}
+  .pickbar{display:inline-block;height:9px;border-radius:5px;background:#e7ecf6;width:110px;position:relative;overflow:hidden;vertical-align:middle;}
+  .pickbar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#3556c9,#7aa2ff);border-radius:5px;}
+  .picksub{font-size:11px;color:#8b96ab;font-weight:700;margin-left:6px;}
+  .avspan{font-size:18px;margin-right:6px;}
+  .accgood{color:#1f9d55;font-weight:800;}
+  .accmid{color:#c98a06;font-weight:800;}
+  .acclow{color:#d64545;font-weight:800;}
+  .dim{color:#a9b2c3;}
+  .spark{vertical-align:middle;}
+  .loading,.empty{text-align:center;color:#8b96ab;font-weight:700;padding:26px;font-size:14px;}
+  .spin{width:24px;height:24px;border:3px solid #e4e9f4;border-top-color:#4a6cf7;border-radius:50%;
+    margin:0 auto 8px;animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .errbox{background:#fdecec;border:1.5px solid #f5b5b5;color:#a33;border-radius:12px;padding:12px 16px;
+    font-weight:700;font-size:14px;margin-bottom:14px;display:none;}
+
+  .modal{position:fixed;inset:0;z-index:40;display:none;align-items:flex-start;justify-content:center;
+    padding:30px 14px;background:rgba(30,40,60,.5);overflow-y:auto;}
+  .modal.show{display:flex;}
+  .sheet{background:#fff;border-radius:16px;padding:22px;max-width:640px;width:100%;
+    box-shadow:0 20px 60px rgba(20,30,60,.3);}
+  .sheet .shead{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+  .sheet .shead .bigav{font-size:34px;}
+  .sheet .shead .nm{font-size:22px;font-weight:900;color:#2b3a55;}
+  .sheet .shead .meta{font-size:12px;color:#8b96ab;font-weight:700;}
+  .closex{margin-left:auto;background:#eef1f8;border:0;border-radius:50%;width:32px;height:32px;
+    font-size:14px;font-weight:900;color:#5b6b85;cursor:pointer;}
+  .ministats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;}
+  .ministats .m{background:#f4f6fb;border-radius:10px;padding:9px 6px;text-align:center;}
+  .ministats .m .n{font-size:18px;font-weight:900;color:#2b3a55;}
+  .ministats .m .l{font-size:10px;font-weight:800;color:#8b96ab;}
+  table.hist{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;}
+  table.hist th{text-align:left;font-size:10px;letter-spacing:.06em;color:#8b96ab;font-weight:800;
+    padding:6px;border-bottom:1.5px solid #e4e9f4;}
+  table.hist td{padding:6px;border-bottom:1px solid #eef1f8;font-weight:600;}
+  .tagend{font-size:11px;font-weight:800;border-radius:8px;padding:2px 8px;}
+  .tagtime{background:#e8f0ff;color:#3b5bd9;}
+  .taglives{background:#fdecec;color:#c33;}
+  footer{max-width:1060px;margin:20px auto 0;color:#8b96ab;font-size:12px;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📊 Teacher Dashboard</h1>
+    <span class="sub">Year 6 Arcade · student performance</span>
+    <a class="backlink" href="index.html">← back to arcade</a>
+  </header>
+
+  <div class="controls">
+    <select id="gameSel"></select>
+    <div class="range" id="rangeBtns">
+      <button data-d="1">Today</button>
+      <button data-d="7">7 days</button>
+      <button data-d="30">30 days</button>
+      <button data-d="0" class="on">All time</button>
+    </div>
+    <button class="cbtn primary" id="refreshBtn">↻ Refresh</button>
+    <button class="cbtn" id="csvBtn">⬇ Export CSV</button>
+  </div>
+
+  <div class="errbox" id="errBox"></div>
+
+  <div class="cards">
+    <div class="kpi"><div class="n" id="kStudents">–</div><div class="l">STUDENTS SIGNED UP</div></div>
+    <div class="kpi"><div class="n" id="kRounds">–</div><div class="l">ROUNDS PLAYED</div></div>
+    <div class="kpi"><div class="n" id="kAvg">–</div><div class="l">CLASS AVG SCORE</div></div>
+    <div class="kpi"><div class="n" id="kAcc">–</div><div class="l">CLASS AVG ACCURACY</div></div>
+  </div>
+
+  <div class="panel">
+    <h2 id="actTitle">Activity — rounds per day (last 14 days)</h2>
+    <div id="activityChart" class="loading"><div class="spin"></div>Loading…</div>
+  </div>
+
+  <div class="panel" id="charPanel" style="display:none">
+    <h2>⚽ Football Is Going Home — England star picks</h2>
+    <div class="hint">Which England player the class chooses most. Follows the date range and only counts rounds that recorded a star (older rounds show as unrecorded).</div>
+    <div id="charTable"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Students</h2>
+    <div class="hint">Click any column heading to sort · click a student for their full history. Accuracy &amp; streak come from any game that records them (needs the optional <b>details</b> column — see note below).</div>
+    <div id="studentTable" class="loading"><div class="spin"></div>Loading student data…</div>
+  </div>
+</div>
+
+<div class="modal" id="studentModal">
+  <div class="sheet">
+    <div class="shead">
+      <span class="bigav" id="mAv">🙂</span>
+      <div><div class="nm" id="mName">Student</div><div class="meta" id="mMeta"></div></div>
+      <button class="closex" id="mClose">✕</button>
+    </div>
+    <div class="ministats" id="mStats"></div>
+    <h2 style="font-size:14px;font-weight:800;color:#2b3a55;">Score over time</h2>
+    <div id="mChart"></div>
+    <h2 style="font-size:14px;font-weight:800;color:#2b3a55;margin-top:12px;">Recent rounds</h2>
+    <div id="mHist"></div>
+  </div>
+</div>
+
+<footer>
+  This page reads the shared arcade score records. Accuracy, questions-answered and best-streak per round are recorded by any game that writes them, once the optional <b>details</b> column exists — run
+  <b>ALTER TABLE scores ADD COLUMN IF NOT EXISTS details text;</b> in the Supabase SQL editor. Older rounds and other games show score-only data. This page is unlinked from the student view apart from a small footer link; it holds no secrets beyond what the public leaderboard already shows.
+</footer>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var SB_URL='https://wpohvsjkrskhlrayaubp.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indwb2h2c2prcnNraGxyYXlhdWJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzMDEzOTcsImV4cCI6MjA5Njg3NzM5N30.Xi07ayGB5CykR-_7QX-b8UsUmMmTbGIlYpctXYgW9JI';
+/* returns the signed-in player's short-lived token, or the public key */
+function sbTok(){try{return localStorage.getItem('sb_token')||SB_KEY;}catch(e){return SB_KEY;}}
+
+function sbH(){return {'apikey':SB_KEY,'Authorization':'Bearer '+sbTok(),'Content-Type':'application/json'};}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* Year 6 games. Every Year 6 GAME_ID starts with 'y6-' so this dashboard only ever
+   shows Year 6 rounds. Add each new game here to give it a friendly name in the
+   filter and the reports; any y6- game not listed still counts, under its raw id. */
+var GAMES={
+  'y6-wordhunt':'🔍 Word Hunt: Weekly Ten',
+  'y6-wordcross':'✚ Word Cross: Weekly Twelve',
+  /* 'y6-my-game':'🎮 My Game', */
+};
+var Y6_PREFIX='y6-';
+function gameLabel(g){return GAMES[g]||('🎮 '+String(g).replace(/^y6-/,'').replace(/-/g,' '));}
+/* rebuilt after each load so a brand-new game appears in the filter without an edit here */
+function buildGameSel(){
+  var sel=$('gameSel'),cur=sel.value||'__all';
+  var ids=Object.keys(GAMES);
+  (allRows||[]).forEach(function(r){if(r.game&&ids.indexOf(r.game)<0)ids.push(r.game);});
+  ids.sort();
+  sel.innerHTML='';
+  var o=document.createElement('option');o.value='__all';o.textContent='All games';sel.appendChild(o);
+  ids.forEach(function(g){
+    var op=document.createElement('option');op.value=g;op.textContent=gameLabel(g);sel.appendChild(op);
+  });
+  sel.value=(ids.indexOf(cur)>=0||cur==='__all')?cur:'__all';
+}
+
+var allRows=[],avatars={},playersList=[],rangeDays=0;
+buildGameSel();   /* start with just "All games"; rebuilt with real ids after data loads */
+var sortKey='last',sortDir=-1;
+
+function daysCut(){
+  if(!rangeDays)return 0;
+  var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(rangeDays-1));
+  return d.getTime();
+}
+function filtered(){
+  var g=$('gameSel').value,cut=daysCut();
+  return allRows.filter(function(r){
+    if(g!=='__all'&&r.game!==g)return false;
+    if(cut&&new Date(r.created_at).getTime()<cut)return false;
+    return true;
+  });
+}
+function parseDet(r){
+  if(!r.details)return null;
+  try{var d=JSON.parse(r.details);return (d&&typeof d==='object')?d:null;}catch(e){return null;}
+}
+
+/* Supabase caps each request at ~1000 rows, so page through until we have them all.
+   Without this the dashboard only ever saw the newest 1000 rounds — undercounting
+   totals, dropping older days from the activity chart, and mis-counting per-game plays. */
+async function fetchAllScores(){
+  var all=[],PAGE=1000,page=0;
+  while(true){
+    var url=SB_URL+'/rest/v1/scores?select=*&order=created_at.desc&limit='+PAGE+'&offset='+(page*PAGE);
+    var r=await fetch(url,{headers:sbH()});
+    if(!r.ok)throw new Error('scores '+r.status);
+    var chunk=await r.json();
+    all=all.concat(chunk.filter(function(r){return String(r.game||'').indexOf(Y6_PREFIX)===0;}));
+    if(chunk.length<PAGE)break;          // last page reached
+    page++;
+    if(page>200)break;                   // safety cap (~200k rows)
+  }
+  return all;
+}
+
+async function loadData(){
+  $('errBox').style.display='none';
+  $('studentTable').innerHTML='<div class="loading"><div class="spin"></div>Loading student data…</div>';
+  $('activityChart').innerHTML='<div class="loading"><div class="spin"></div>Loading…</div>';
+  try{
+    allRows=await fetchAllScores();
+    buildGameSel();
+    try{
+      var pr=await fetch(SB_URL+'/rest/v1/players?select=name,avatar,created_at&order=name.asc&limit=1000',{headers:sbH()});
+      if(pr.ok){
+        playersList=await pr.json();
+        playersList.forEach(function(p){avatars[p.name]=p.avatar||'🙂';});
+      }
+    }catch(e){}
+    render();
+  }catch(e){
+    $('errBox').textContent='Could not reach the score server — check your connection and press Refresh.';
+    $('errBox').style.display='block';
+    $('studentTable').innerHTML='<div class="empty">No data loaded.</div>';
+    $('activityChart').innerHTML='<div class="empty">No data loaded.</div>';
+  }
+}
+
+function aggStudents(rows){
+  var by={};
+  rows.forEach(function(r){
+    var n=r.name||'?';
+    if(!by[n])by[n]={name:n,rounds:0,best:0,sum:0,accSum:0,accN:0,streak:0,last:0,scores:[],rows:[]};
+    var s=by[n];
+    s.rounds++;s.sum+=r.score;s.best=Math.max(s.best,r.score);
+    var t=new Date(r.created_at).getTime();s.last=Math.max(s.last,t);
+    s.rows.push(r);
+    var d=parseDet(r);
+    if(d&&typeof d.acc==='number'){s.accSum+=d.acc;s.accN++;s.streak=Math.max(s.streak,d.streak||0);}
+  });
+  var out=Object.keys(by).map(function(k){
+    var s=by[k];
+    s.avg=Math.round(s.sum/s.rounds);
+    s.acc=s.accN?Math.round(s.accSum/s.accN):null;
+    s.rows.sort(function(a,b){return new Date(a.created_at)-new Date(b.created_at);});
+    s.scores=s.rows.map(function(r){return r.score;});
+    s.games={};s.rows.forEach(function(r){
+      if(!s.games[r.game])s.games[r.game]={n:0,best:0};
+      s.games[r.game].n++;s.games[r.game].best=Math.max(s.games[r.game].best,r.score);
+    });
+    return s;
+  });
+  /* every registered student appears, even before their first game */
+  var have={};out.forEach(function(s){have[s.name]=true;});
+  playersList.forEach(function(p){
+    if(!have[p.name])out.push({name:p.name,rounds:0,best:null,avg:null,acc:null,streak:0,
+      last:0,scores:[],rows:[],games:{},joined:p.created_at});
+  });
+  playersList.forEach(function(p){
+    out.forEach(function(s){if(s.name===p.name)s.joined=p.created_at;});
+  });
+  return out;
+}
+
+function accClass(a){return a>=80?'accgood':a>=55?'accmid':'acclow';}
+function fmtWhen(t){
+  var d=new Date(t);
+  return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' '+
+    d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+}
+function sparkline(scores){
+  var last=scores.slice(-10);
+  if(last.length<2)return '<span class="dim">–</span>';
+  var w=90,h=26,max=Math.max.apply(null,last),min=Math.min.apply(null,last);
+  if(max===min)max=min+1;
+  var pts=last.map(function(v,i){
+    return (4+(w-8)*i/(last.length-1)).toFixed(1)+','+(h-3-(h-8)*(v-min)/(max-min)).toFixed(1);
+  }).join(' ');
+  var up=last[last.length-1]>=last[0];
+  return '<svg class="spark" width="'+w+'" height="'+h+'"><polyline points="'+pts+
+    '" fill="none" stroke="'+(up?'#1f9d55':'#d64545')+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+function render(){
+  var rows=filtered(),students=aggStudents(rows);
+  /* KPIs (respect both game + range filters) */
+  $('kStudents').textContent=students.length;
+  $('kRounds').textContent=rows.length;
+  $('kAvg').textContent=rows.length?Math.round(rows.reduce(function(a,r){return a+r.score;},0)/rows.length):'–';
+  var accs=[];rows.forEach(function(r){var d=parseDet(r);if(d&&typeof d.acc==='number')accs.push(d.acc);});
+  $('kAcc').textContent=accs.length?Math.round(accs.reduce(function(a,b){return a+b;},0)/accs.length)+'%':'–';
+  /* the activity chart windows itself by the selected range, so give it
+     rows filtered by GAME only (not clipped by range). */
+  var g=$('gameSel').value;
+  var gameRows=allRows.filter(function(r){return g==='__all'||r.game===g;});
+  renderActivity(gameRows);
+  renderTable(students);
+  renderChars(rows,g);
+}
+
+/* ---- England star picks for Football Is Going Home ---- */
+function renderChars(rows,gameFilter){
+  var panel=$('charPanel');
+  if(gameFilter!=='__all'&&gameFilter!=='roadtoglory'){panel.style.display='none';return;}
+  var fRows=rows.filter(function(r){return r.game==='roadtoglory';});
+  if(!fRows.length){panel.style.display='none';return;}
+  var by={},unrecorded=0;
+  fRows.forEach(function(r){
+    var d=parseDet(r);
+    if(!d||!d.character){unrecorded++;return;}
+    var c=String(d.character);
+    if(!by[c])by[c]={picks:0,best:0,sum:0,fans:{}};
+    var b=by[c];
+    b.picks++;b.sum+=r.score;if(r.score>b.best)b.best=r.score;
+    b.fans[r.name]=(b.fans[r.name]||0)+1;
+  });
+  var chars=Object.keys(by);
+  if(!chars.length){
+    panel.style.display='';
+    $('charTable').innerHTML='<div class="empty">No star picks recorded yet in this range — rounds saved before this update don\'t include the chosen player.</div>';
+    return;
+  }
+  var recorded=fRows.length-unrecorded;
+  chars.sort(function(a,b){return by[b].picks-by[a].picks||by[b].best-by[a].best;});
+  var med=['🥇','🥈','🥉'];
+  var hh='<table class="students picks"><thead><tr><th></th><th>England star</th><th>Picks</th><th>Share</th><th>Best</th><th>Average</th><th>Biggest fan</th></tr></thead><tbody>';
+  chars.forEach(function(c,i){
+    var b=by[c],pct=Math.round(b.picks/recorded*100);
+    var fan='–',fmax=0;
+    Object.keys(b.fans).forEach(function(n){if(b.fans[n]>fmax){fmax=b.fans[n];fan=n;}});
+    hh+='<tr><td>'+(i<3?med[i]:(i+1))+'</td><td><b>'+esc(c)+'</b></td><td>'+b.picks+'</td>'+
+      '<td><span class="pickbar"><i style="width:'+pct+'%"></i></span><span class="picksub">'+pct+'%</span></td>'+
+      '<td>'+b.best+'</td><td>'+Math.round(b.sum/b.picks)+'</td><td>'+esc(fan)+(fmax>1?' <span class="picksub">×'+fmax+'</span>':'')+'</td></tr>';
+  });
+  hh+='</tbody></table>';
+  if(unrecorded>0)hh+='<div class="picksub" style="margin-top:8px;display:block;">+ '+unrecorded+' round'+(unrecorded===1?'':'s')+' from before star-tracking was added.</div>';
+  panel.style.display='';
+  $('charTable').innerHTML=hh;
+}
+
+function renderActivity(rows){
+  /* choose how many day-columns to show, based on the range buttons */
+  var todayMid=new Date();todayMid.setHours(0,0,0,0);
+  var windowDays,titleSuffix;
+  if(rangeDays===1){windowDays=1;titleSuffix='today';}
+  else if(rangeDays===7){windowDays=7;titleSuffix='last 7 days';}
+  else if(rangeDays===30){windowDays=30;titleSuffix='last 30 days';}
+  else{
+    /* All time: span from the first recorded round up to today */
+    var earliest=todayMid.getTime();
+    rows.forEach(function(r){var t=new Date(r.created_at);t.setHours(0,0,0,0);
+      if(t.getTime()<earliest)earliest=t.getTime();});
+    windowDays=Math.round((todayMid.getTime()-earliest)/86400000)+1;
+    if(!isFinite(windowDays)||windowDays<1)windowDays=1;
+    titleSuffix='all time';
+  }
+  var MAXBARS=45,capped=false;
+  if(windowDays>MAXBARS){windowDays=MAXBARS;capped=true;titleSuffix='last '+MAXBARS+' days';}
+  if($('actTitle'))$('actTitle').textContent='Activity — rounds per day ('+titleSuffix+')';
+
+  var days=[],counts=[];
+  for(var i=windowDays-1;i>=0;i--){var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);days.push(d);counts.push(0);}
+  var firstT=days[0].getTime();
+  rows.forEach(function(r){
+    var t=new Date(r.created_at);t.setHours(0,0,0,0);var tt=t.getTime();
+    if(tt<firstT)return;
+    for(var i=0;i<days.length;i++){if(days[i].getTime()===tt){counts[i]++;break;}}
+  });
+  var max=Math.max(1,Math.max.apply(null,counts));
+  var W=980,H=150;
+  /* bar width: fill the width for many days, but keep bars sensible when there are few */
+  var bw=Math.min(W/windowDays,120);
+  var offX=(W-bw*windowDays)/2;
+  /* thin out date labels when there are lots of columns so they don't collide */
+  var labelEvery=windowDays<=16?1:Math.ceil(windowDays/12);
+  var showNums=windowDays<=31;
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;">';
+  counts.forEach(function(c,i){
+    var bh=(H-40)*c/max,x=offX+i*bw+6,y=H-26-bh,w=Math.max(bw-12,4);
+    svg+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+Math.max(bh,2)+'" rx="5" fill="'+(c?'#4a6cf7':'#e4e9f4')+'"/>';
+    if(c&&showNums)svg+='<text x="'+(x+w/2)+'" y="'+(y-6)+'" text-anchor="middle" font-size="12" font-weight="800" fill="#5b6b85">'+c+'</text>';
+    if(i%labelEvery===0||i===counts.length-1)
+      svg+='<text x="'+(x+w/2)+'" y="'+(H-8)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#8b96ab">'+
+        days[i].toLocaleDateString(undefined,{day:'numeric',month:'short'}).replace(' ','\u00a0')+'</text>';
+  });
+  $('activityChart').innerHTML=svg+'</svg>';
+}
+
+var lastStudents=[];
+function renderTable(students){
+  lastStudents=students;
+  if(!students.length){$('studentTable').innerHTML='<div class="empty">No rounds recorded in this range — try "All time" or another game.</div>';return;}
+  students.sort(function(a,b){
+    var ka=a[sortKey],kb=b[sortKey];
+    if(ka===null)ka=-1;if(kb===null)kb=-1;
+    if(typeof ka==='string')return sortDir*ka.localeCompare(kb);
+    return sortDir*(ka-kb);
+  });
+  var cols=[['name','Student'],['gcount','Games'],['rounds','Rounds'],['best','Best'],['avg','Average'],
+    ['acc','Avg accuracy'],['streak','Best streak'],['last','Last played'],['trend','Trend']];
+  var h='<table class="students"><thead><tr>';
+  cols.forEach(function(c){
+    var arr=(sortKey===c[0])?(sortDir<0?' <span class="arr">▼</span>':' <span class="arr">▲</span>'):'';
+    h+='<th data-k="'+c[0]+'">'+c[1]+arr+'</th>';
+  });
+  h+='</tr></thead><tbody>';
+  students.forEach(function(s,i){
+    s.gcount=Object.keys(s.games||{}).length;
+    var played=s.rounds>0;
+    h+='<tr data-i="'+i+'"><td><span class="avspan">'+esc(avatars[s.name]||'🙂')+'</span>'+esc(s.name)+'</td>'+
+      '<td>'+(played?s.gcount:'<span class="dim">–</span>')+'</td>'+
+      '<td>'+(played?s.rounds:'<span class="dim">0</span>')+'</td>'+
+      '<td>'+(played?'<b>'+s.best+'</b>':'<span class="dim">–</span>')+'</td>'+
+      '<td>'+(played?s.avg:'<span class="dim">–</span>')+'</td>'+
+      '<td>'+(s.acc===null?'<span class="dim">–</span>':'<span class="'+accClass(s.acc)+'">'+s.acc+'%</span>')+'</td>'+
+      '<td>'+(s.streak||'<span class="dim">–</span>')+'</td>'+
+      '<td>'+(played?fmtWhen(s.last):'<span class="dim">not yet played</span>')+'</td>'+
+      '<td>'+sparkline(s.scores)+'</td></tr>';
+  });
+  $('studentTable').innerHTML=h+'</tbody></table>';
+  document.querySelectorAll('.students th').forEach(function(th){
+    th.addEventListener('click',function(){
+      var k=th.dataset.k;if(k==='trend')return;
+      if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=(k==='name')?1:-1;}
+      renderTable(lastStudents);
+    });
+  });
+  document.querySelectorAll('.students tbody tr').forEach(function(tr){
+    tr.addEventListener('click',function(){openStudent(lastStudents[parseInt(tr.dataset.i,10)]);});
+  });
+}
+
+function openStudent(s){
+  $('mAv').textContent=avatars[s.name]||'🙂';
+  $('mName').textContent=s.name;
+  var joined=s.joined?(' · joined '+new Date(s.joined).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})):'';
+  if(!s.rounds){
+    $('mMeta').textContent='Signed up but no games recorded in this view'+joined;
+    $('mStats').innerHTML='';
+    $('mChart').innerHTML='<div class="empty">No rounds yet — once they play, their scores, games and times will appear here.</div>';
+    $('mHist').innerHTML='';
+    $('studentModal').classList.add('show');
+    return;
+  }
+  $('mMeta').textContent=s.rounds+' rounds in this view · last played '+fmtWhen(s.last)+joined;
+  /* which games, how often, and their record in each */
+  var gchips='';
+  Object.keys(s.games).forEach(function(g){
+    gchips+='<div class="m" style="text-align:left;padding:9px 12px;"><div style="font-size:12px;font-weight:800;color:#2b3a55;">'+
+      esc(gameLabel(g))+'</div><div style="font-size:11px;font-weight:700;color:#8b96ab;">'+
+      s.games[g].n+' round'+(s.games[g].n>1?'s':'')+' · best <b style="color:#2b3a55;">'+s.games[g].best+'</b></div></div>';
+  });
+  $('mStats').innerHTML=
+    '<div class="m"><div class="n">'+s.best+'</div><div class="l">BEST</div></div>'+
+    '<div class="m"><div class="n">'+s.avg+'</div><div class="l">AVERAGE</div></div>'+
+    '<div class="m"><div class="n">'+(s.acc===null?'–':s.acc+'%')+'</div><div class="l">AVG ACCURACY</div></div>'+
+    '<div class="m"><div class="n">'+(s.streak||'–')+'</div><div class="l">BEST STREAK</div></div>'+
+    gchips;
+  /* score over time chart */
+  var sc=s.rows.map(function(r){return r.score;});
+  var W=580,H=170,pad=34;
+  var max=Math.max.apply(null,sc),min=0;if(max<=0)max=1;
+  var x=function(i){return pad+(W-pad-12)*(sc.length===1?0.5:i/(sc.length-1));};
+  var y=function(v){return 14+(H-14-28)*(1-(v-min)/(max-min));};
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;">';
+  [0,0.5,1].forEach(function(f){
+    var v=Math.round(max*f),gy=y(v);
+    svg+='<line x1="'+pad+'" y1="'+gy+'" x2="'+(W-12)+'" y2="'+gy+'" stroke="#eef1f8" stroke-width="1.5"/>'+
+      '<text x="'+(pad-6)+'" y="'+(gy+4)+'" text-anchor="end" font-size="11" font-weight="700" fill="#8b96ab">'+v+'</text>';
+  });
+  if(sc.length>1){
+    svg+='<polyline points="'+sc.map(function(v,i){return x(i)+','+y(v);}).join(' ')+
+      '" fill="none" stroke="#4a6cf7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+  }
+  sc.forEach(function(v,i){
+    svg+='<circle cx="'+x(i)+'" cy="'+y(v)+'" r="4.5" fill="#fff" stroke="#4a6cf7" stroke-width="2.5"/>';
+  });
+  svg+='<text x="'+pad+'" y="'+(H-6)+'" font-size="11" font-weight="700" fill="#8b96ab">oldest → newest ('+sc.length+' rounds)</text>';
+  $('mChart').innerHTML=svg+'</svg>';
+  /* history table */
+  var h='<table class="hist"><thead><tr><th>WHEN</th><th>GAME</th><th>SCORE</th><th>ACCURACY</th><th>Q ANSWERED</th><th>STREAK</th><th>ENDED BY</th></tr></thead><tbody>';
+  s.rows.slice().reverse().slice(0,20).forEach(function(r){
+    var d=parseDet(r);
+    h+='<tr><td>'+fmtWhen(new Date(r.created_at).getTime())+'</td>'+
+      '<td>'+esc(gameLabel(r.game).replace(/^\S+\s/,''))+'</td>'+
+      '<td><b>'+r.score+'</b></td>'+
+      '<td>'+(d&&typeof d.acc==='number'?'<span class="'+accClass(d.acc)+'">'+d.acc+'%</span>':'<span class="dim">–</span>')+'</td>'+
+      '<td>'+(d&&d.q!=null?d.c+' / '+d.q:'<span class="dim">–</span>')+'</td>'+
+      '<td>'+(d&&d.streak!=null?d.streak:'<span class="dim">–</span>')+'</td>'+
+      '<td>'+(d&&d.end?('<span class="tagend '+(d.end==='lives'?'taglives">3 wrong':'tagtime">time up')+'</span>'):'<span class="dim">–</span>')+'</td></tr>';
+  });
+  $('mHist').innerHTML=h+'</tbody></table>';
+  $('studentModal').classList.add('show');
+}
+$('mClose').addEventListener('click',function(){$('studentModal').classList.remove('show');});
+$('studentModal').addEventListener('click',function(e){if(e.target===$('studentModal'))$('studentModal').classList.remove('show');});
+
+function exportCSV(){
+  var rows=filtered();
+  var lines=['name,game,score,accuracy,questions,correct,best_streak,ended_by,date'];
+  rows.forEach(function(r){
+    var d=parseDet(r)||{};
+    var safe=String(r.name||'').replace(/"/g,'""');
+    lines.push('"'+safe+'",'+r.game+','+r.score+','+
+      (d.acc!=null?d.acc:'')+','+(d.q!=null?d.q:'')+','+(d.c!=null?d.c:'')+','+
+      (d.streak!=null?d.streak:'')+','+(d.end||'')+','+new Date(r.created_at).toISOString());
+  });
+  var blob=new Blob([lines.join('\n')],{type:'text/csv'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='arcade-results-'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);a.click();a.remove();
+}
+
+$('refreshBtn').addEventListener('click',loadData);
+$('csvBtn').addEventListener('click',exportCSV);
+$('gameSel').addEventListener('change',render);
+document.querySelectorAll('#rangeBtns button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('#rangeBtns button').forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on');rangeDays=parseInt(b.dataset.d,10);render();
+  });
+});
+loadData();
+})();
+</script>
+</body>
+</html>
