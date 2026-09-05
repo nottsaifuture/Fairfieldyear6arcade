@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Word Hunt — Weekly Ten (Year 6)</title>
+<title>Word Hunt — Weekly Words (Year 6)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -157,7 +157,7 @@
 
   <div id="topbar">
     <div class="stat"><div class="lbl">SCORE</div><div class="val" id="scoreval">0</div></div>
-    <div class="stat mid"><div class="lbl">FOUND</div><div class="val" id="foundval">0/10</div></div>
+    <div class="stat mid"><div class="lbl">FOUND</div><div class="val" id="foundval">0/12</div></div>
     <div class="stat right"><div class="lbl">TIME</div><div class="val" id="timeval">0:00</div></div>
   </div>
   <button id="hintbtn">&#128161; HINT <span id="hintsleft">3</span></button>
@@ -176,9 +176,9 @@
   <!-- START -->
   <div class="panel" id="startpanel">
     <div class="title">WORD<br>HUNT</div>
-    <div class="tagline">Ten brand-new words every week, hidden in the letter grid. Drag across the letters to catch them &mdash; forwards, backwards, up, down and diagonally. Find all ten as fast as you can!</div>
+    <div class="tagline">This week&rsquo;s spelling words, hidden in the letter grid. Drag across the letters to catch them &mdash; forwards, backwards, up, down and diagonally. Find them all as fast as you can!</div>
     <div class="chip-row">
-      <div class="chip">&#128197; <b>10 new words</b> every week</div>
+      <div class="chip">&#128197; <b>New words</b> every week</div>
       <div class="chip">&#9889; Speed &amp; streak bonuses</div>
       <div class="chip">&#128218; Learn what each word means</div>
       <div class="chip">&#127942; All-time <b>+</b> weekly top 15</div>
@@ -204,7 +204,7 @@
   <div class="panel" id="endpanel" style="display:none;">
     <div id="endbadge">&#11088;</div>
     <div class="rank" id="endrank">WORD MASTER</div>
-    <div class="title" id="endtitle" style="font-size:clamp(24px,5.6vw,38px);">ALL TEN FOUND!</div>
+    <div class="title" id="endtitle" style="font-size:clamp(24px,5.6vw,38px);">ALL WORDS FOUND!</div>
     <div class="endbig" id="endscore">0</div>
     <div class="endstat" id="endstats"></div>
     <div class="lbl-sm">THIS WEEK&rsquo;S WORDS</div>
@@ -253,7 +253,7 @@ var $=function(id){return document.getElementById(id);};
 
      {start:'YYYY-MM-DD', title:'Week 5 - Space', words:[
         {w:'PLANET', d:'a large world that goes around a star'},
-        ... ten of them ...
+        ... as many as you like — this list has twelve ...
      ]},
 
    * start  = the MONDAY the list goes live (the game picks the newest list
@@ -272,7 +272,9 @@ var WEEKS=[
     {w:'TEMPERATURE',  d:'how hot or how cold something is'},
     {w:'COMFORTABLE',  d:'nice and relaxing to sit in, be in or wear'},
     {w:'ENVIRONMENT',  d:'the natural world all around us'},
-    {w:'PARTICULARLY', d:'especially, or more than usual'}
+    {w:'PARTICULARLY', d:'especially, or more than usual'},
+    {w:'PARLIAMENT',    d:'the place where laws are made and argued about'},
+    {w:'EXTRAORDINARY', d:'so unusual or amazing that people talk about it'}
   ]}
 ];
 
@@ -362,10 +364,10 @@ function buildGrid(words,d){
   for(var attempt=0;attempt<60;attempt++){
     var g=[],r,c;
     for(r=0;r<size;r++){g.push([]);for(c=0;c<size;c++)g[r].push('');}
-    var placed=[],ok=true;
+    var placed=[],ok=true,usage={};
     var order=words.slice().sort(function(a,b){return b.length-a.length;});
     for(var i=0;i<order.length;i++){
-      var p=placeOne(g,order[i],size,DIFFS[d].dirs);
+      var p=placeOne(g,order[i],size,DIFFS[d].dirs,usage);
       if(!p){ok=false;break;}
       placed.push(p);
     }
@@ -377,24 +379,33 @@ function buildGrid(words,d){
   }
   return null;
 }
-function placeOne(g,word,size,dirs){
-  var tries=400;
-  while(tries-- > 0){
-    var d=dirs[(Math.random()*dirs.length)|0];
-    var dr=d[0],dc=d[1];
-    var r0=(Math.random()*size)|0, c0=(Math.random()*size)|0;
-    var r1=r0+dr*(word.length-1), c1=c0+dc*(word.length-1);
-    if(r1<0||r1>=size||c1<0||c1>=size)continue;
-    var fit=true,r=r0,c=c0,i;
-    for(i=0;i<word.length;i++){
-      var cur=g[r][c];
-      if(cur&&cur!==word[i]){fit=false;break;}
-      r+=dr;c+=dc;
+/* Directions are tried least-used-first. Picking one at random instead would bury the
+   diagonals: a long word fits a diagonal in only a handful of spots but a straight line
+   in dozens, so random choice quietly produces near enough all-across grids. */
+function placeOne(g,word,size,dirs,usage){
+  usage=usage||{};
+  var order=dirs.slice().sort(function(a,b){
+    var ua=usage[a[0]+','+a[1]]||0, ub=usage[b[0]+','+b[1]]||0;
+    return (ua-ub)||(Math.random()-0.5);
+  });
+  for(var di=0;di<order.length;di++){
+    var dr=order[di][0],dc=order[di][1],tries=150;
+    while(tries-- > 0){
+      var r0=(Math.random()*size)|0, c0=(Math.random()*size)|0;
+      var r1=r0+dr*(word.length-1), c1=c0+dc*(word.length-1);
+      if(r1<0||r1>=size||c1<0||c1>=size)continue;
+      var fit=true,r=r0,c=c0,i;
+      for(i=0;i<word.length;i++){
+        var cur=g[r][c];
+        if(cur&&cur!==word[i]){fit=false;break;}
+        r+=dr;c+=dc;
+      }
+      if(!fit)continue;
+      r=r0;c=c0;
+      for(i=0;i<word.length;i++){g[r][c]=word[i];r+=dr;c+=dc;}
+      usage[dr+','+dc]=(usage[dr+','+dc]||0)+1;
+      return {word:word,r0:r0,c0:c0,r1:r1,c1:c1,dr:dr,dc:dc};
     }
-    if(!fit)continue;
-    r=r0;c=c0;
-    for(i=0;i<word.length;i++){g[r][c]=word[i];r+=dr;c+=dc;}
-    return {word:word,r0:r0,c0:c0,r1:r1,c1:c1,dr:dr,dc:dc};
   }
   return null;
 }

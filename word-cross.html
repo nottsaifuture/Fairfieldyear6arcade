@@ -50,7 +50,15 @@
   .cell.wrongflash{background:#FFC0BC;}
 
   /* ---------- CLUES ---------- */
-  #cluecol{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto;padding-right:4px;max-width:290px;}
+  #rightcol{flex:1 1 auto;min-width:0;max-width:290px;display:flex;flex-direction:column;gap:8px;min-height:0;}
+  #cluecol{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto;padding-right:4px;}
+  #bank{flex:0 0 auto;background:rgba(255,255,255,.05);border:1.5px solid rgba(63,217,208,.28);border-radius:10px;padding:8px 9px;}
+  #bank.hide{display:none;}
+  .bankhead{font-family:'Orbitron',sans-serif;font-size:8.5px;letter-spacing:.16em;color:var(--aqua);font-weight:700;margin-bottom:6px;}
+  #bankwords{display:flex;flex-wrap:wrap;gap:4px;}
+  .bword{font-size:12.5px;font-weight:700;letter-spacing:.03em;color:var(--ink);background:rgba(255,255,255,.08);
+    border-radius:999px;padding:3px 9px;}
+  .bword.used{color:#4f8f76;background:rgba(191,245,218,.12);text-decoration:line-through;text-decoration-thickness:2px;}
   .cluehead{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:.2em;color:var(--aqua);font-weight:700;
     border-bottom:1.5px solid rgba(63,217,208,.35);padding-bottom:4px;}
   .clue{display:flex;gap:7px;font-size:13.5px;font-weight:600;line-height:1.3;color:var(--muted);padding:5px 7px;border-radius:8px;cursor:pointer;}
@@ -166,6 +174,10 @@
     #cluecol{display:none;}
     #curclue{display:block;}
     #play{flex-direction:column;align-items:center;gap:6px;}
+    #rightcol{flex:0 0 auto;max-width:100%;width:100%;}
+    #bank{max-height:106px;overflow-y:auto;padding:6px 8px;}
+    #bankwords{justify-content:center;gap:3px;}
+    .bword{font-size:11px;padding:2px 7px;}
   }
 </style>
 </head>
@@ -185,7 +197,10 @@
         <div id="gridbox"><div id="grid"></div></div>
         <div id="curclue"><b>1 ACROSS</b> — clue</div>
       </div>
-      <div id="cluecol"></div>
+      <div id="rightcol">
+        <div id="bank"><div class="bankhead">WORD BANK &mdash; copy the spelling</div><div id="bankwords"></div></div>
+        <div id="cluecol"></div>
+      </div>
     </div>
     <div id="kb"></div>
   </div>
@@ -202,10 +217,11 @@
   <!-- START -->
   <div class="panel" id="startpanel">
     <div class="title">WORD<br>CROSS</div>
-    <div class="tagline">Twelve words a week, woven into a crossword. Read the clue, tap the squares and spell it out — every word you get right locks in green and gives you a letter towards the ones that cross it.</div>
+    <div class="tagline">Twelve words a week, woven into a crossword. Read the clue, tap the squares and spell it out — every word you get right locks in green and gives you a letter towards the ones that cross it. The <b>word bank</b> sits beside the grid to copy the spelling from &mdash; or take the <b>Challenge</b> with no word bank at all, for double points.</div>
     <div class="chip-row">
       <div class="chip">&#10005; <b>12 words</b> that interlock</div>
       <div class="chip">&#128161; Clues are the meanings</div>
+      <div class="chip">&#128221; <b>Word bank</b> to copy from</div>
       <div class="chip">&#9889; Speed &amp; streak bonuses</div>
       <div class="chip">&#127942; All-time <b>+</b> weekly top 15</div>
     </div>
@@ -214,11 +230,11 @@
       <select id="weekpick"></select>
     </div>
     <div>
-      <div class="lbl-sm" style="margin-bottom:8px;">HOW MUCH HELP?</div>
+      <div class="lbl-sm" style="margin-bottom:8px;">HOW MUCH HELP? (LESS HELP = MORE POINTS)</div>
       <div id="difficulty">
         <button class="diffbtn" data-d="0">Gentle</button>
         <button class="diffbtn on" data-d="1">Normal</button>
-        <button class="diffbtn" data-d="2">Expert</button>
+        <button class="diffbtn" data-d="2">Challenge</button>
       </div>
       <div class="tagline" id="diffdesc" style="font-size:13px;margin-top:8px;">Clues plus the first letter of every word &mdash; 5 hints.</div>
     </div>
@@ -480,9 +496,12 @@ function buildCrossword(items){
 
 /* ================= GAME STATE ================= */
 var DIFFS=[
-  {name:'Gentle', reveal:'firstlast', hints:6, desc:'Clues plus the first <b>and last</b> letter of every word &mdash; 6 hints.'},
-  {name:'Normal', reveal:'first',     hints:5, desc:'Clues plus the first letter of every word &mdash; 5 hints.'},
-  {name:'Expert', reveal:'none',      hints:3, desc:'Clues only, empty grid, and just 3 hints. A proper crossword!'}
+  {name:'Gentle',    bank:true,  reveal:'firstlast', hints:6, mult:1,
+   desc:'The <b>word bank</b> is on show to copy from, plus the first <b>and last</b> letter of every answer &mdash; 6 hints.'},
+  {name:'Normal',    bank:true,  reveal:'first',     hints:5, mult:1.25,
+   desc:'The <b>word bank</b> is on show to copy from, plus the first letter of every answer &mdash; 5 hints. <b>1.25&times; points</b>.'},
+  {name:'Challenge', bank:false, reveal:'none',      hints:3, mult:2,
+   desc:'<b>No word bank</b> and an empty grid &mdash; just the clues and 3 hints. Worth <b>double points</b>!'}
 ];
 var diff=1;
 var state=null,cellEls=[],cellSize=30,timerId=null;
@@ -512,6 +531,8 @@ function startGame(){
 
   $('startpanel').style.display='none';$('endpanel').style.display='none';$('boardpanel').style.display='none';
   $('stage').classList.add('show');$('kb').classList.add('show');
+  $('bank').classList.toggle('hide',!DIFFS[diff].bank);
+  renderBank();
   $('weekline').textContent=wk.title.toUpperCase()+'  ·  '+DIFFS[diff].name.toUpperCase();
   $('solvedval').textContent='0/'+state.entries.length;
   renderGrid();renderClues();buildKeyboard();selectEntry(0);updateHUD();
@@ -521,6 +542,17 @@ function startGame(){
     state.elapsed=Math.floor((Date.now()-state.t0)/1000);
     $('timeval').textContent=fmtTime(state.elapsed);
   },250);
+}
+
+/* the word bank: every answer listed alphabetically so it gives nothing away about
+   which clue it belongs to — it is there to copy the spelling from */
+function renderBank(){
+  if(!DIFFS[diff].bank){$('bankwords').innerHTML='';return;}
+  var words=state.entries.map(function(e){return {w:e.word,solved:!!e.solved};})
+    .sort(function(a,b){return a.w<b.w?-1:1;});
+  $('bankwords').innerHTML=words.map(function(x){
+    return '<span class="bword'+(x.solved?' used':'')+'">'+lbEsc(x.w)+'</span>';
+  }).join('');
 }
 
 function entryCells(e){
@@ -709,10 +741,10 @@ function solveEntry(e,i){
   var speed=Math.max(0,Math.round(220-secs*7));
   state.streak++;
   var streakBonus=Math.min(150,25*(state.streak-1));
-  state.score+=base+speed+streakBonus;
+  state.score+=Math.round((base+speed+streakBonus)*DIFFS[diff].mult);
   sndSolved(state.solvedCount);
   flash(e.word,e.clue+(streakBonus?'  ·  🔥 streak +'+streakBonus:''));
-  renderClues();paintGrid();updateHUD();
+  renderClues();renderBank();paintGrid();updateHUD();
   if(state.solvedCount>=state.entries.length){setTimeout(finish,900);return;}
   /* jump to the next unsolved clue so the child never has to hunt for one */
   for(var k=1;k<=state.entries.length;k++){
@@ -797,9 +829,11 @@ async function finish(){
   state.over=true;
   if(timerId){clearInterval(timerId);timerId=null;}
   state.elapsed=Math.floor((Date.now()-state.t0)/1000);
-  var timeBonus=Math.max(0,1800-state.elapsed*5);
-  var accBonus=Math.max(0,250-state.wrong*25);
+  var mult=DIFFS[diff].mult;
+  var timeBonus=Math.round(Math.max(0,1800-state.elapsed*5)*mult);
+  var accBonus=Math.round(Math.max(0,250-state.wrong*25)*mult);
   state.score+=timeBonus+accBonus;
+  state.mult=mult;
   var score=state.score;
   sndWin();
 
@@ -808,7 +842,8 @@ async function finish(){
   $('endpanel').style.display='flex';
   $('endscore').textContent=score;
   $('endstats').innerHTML='⏱ '+fmtTime(state.elapsed)+' &nbsp;&middot;&nbsp; 💡 '+state.hintsUsed+' hints &nbsp;&middot;&nbsp; ❌ '+state.wrong+' wrong tries'+
-    '<div style="font-size:12px;color:var(--muted);margin-top:4px;">Speed bonus +'+timeBonus+' &middot; Accuracy bonus +'+accBonus+'</div>';
+    '<div style="font-size:12px;color:var(--muted);margin-top:4px;">Speed bonus +'+timeBonus+' &middot; Accuracy bonus +'+accBonus+
+    ' &middot; '+DIFFS[diff].name+(mult!==1?' ×'+mult+' points':'')+'</div>';
   $('endrank').textContent=rankFor(score);
   $('recap').innerHTML=state.week.words.map(function(x){return '<div class="rec-w"><b>'+lbEsc(x.w)+'</b> &mdash; '+lbEsc(x.d)+'</div>';}).join('');
 

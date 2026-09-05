@@ -5,8 +5,8 @@ A fresh arcade for Year 6, built on the same setup as the Year 5 one.
 ## What's here
 
 - `index.html` — the launcher: sign-in, avatars, term filter, My Records.
-- `word-cross.html` — Word Cross (`y6-wordcross`): a crossword built from twelve weekly words, with the meanings as the clues. It keeps its OWN `WEEKS` list (twelve words a week) — Word Hunt's list is separate and holds ten.
-- `word-hunt.html` — Word Hunt (`y6-wordhunt`): a weekly word search. Ten new words go in the `WEEKS` list at the top of its script every week; the game auto-picks the newest list whose Monday has passed, and its leaderboard has an all-time top 15 and a this-week top 15.
+- `word-cross.html` — Word Cross (`y6-wordcross`): a crossword built from twelve weekly words, with the meanings as the clues. Gentle and Normal show a word bank beside the grid to copy the spelling from; Challenge hides it and pays double points. It keeps its OWN `WEEKS` list — Word Hunt has a separate list, so **both must be updated each week**.
+- `word-hunt.html` — Word Hunt (`y6-wordhunt`): a weekly word search. Each week's words go in the `WEEKS` list at the top of its script (any number — Week 1 has twelve); the game auto-picks the newest list whose Monday has passed, and its leaderboard has an all-time top 15 and a this-week top 15.
 - `teacher.html` — the teacher dashboard.
 
 ## What carries over, what doesn't
@@ -35,5 +35,5 @@ A fresh arcade for Year 6, built on the same setup as the Year 5 one.
 
 ## Terms
 
-The sections are `weekly` (Word of the Week — not a school term, it holds Word Hunt and Word Cross), `books`, `autumn`, `spring`, `summer1`, `summer2`. The headings say
+The sections are `weekly` (Word of the Week — not a school term, it holds Word Hunt and Word Cross), `autumn`, `spring`, `summer1`, `summer2`. (There was a `books` section for class reads; it was removed.) The headings say
 "Topic to be added" — swap in the real Year 6 topics when they're known.

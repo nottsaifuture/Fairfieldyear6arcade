@@ -364,7 +364,6 @@
   <nav class="termnav" id="termnav">
     <button class="pill active" data-term="__all">✦ All 2</button>
     <button class="pill" data-term="weekly" style="--pa:#FFC94A">🔍 Every Week <span class="pn">2</span></button>
-    <button class="pill" data-term="books" style="--pa:#F2C14E">📚 Books <span class="pn">0</span></button>
     <button class="pill" data-term="autumn" style="--pa:#52d68a">🌎 Autumn <span class="pn">0</span></button>
     <button class="pill" data-term="spring" style="--pa:#36E2FF">🧭 Spring <span class="pn">0</span></button>
     <button class="pill" data-term="summer1" style="--pa:#C0392B">👑 Summer 1 <span class="pn">0</span></button>
@@ -406,7 +405,7 @@
         <div class="card-body">
           <div class="card-tag">Literacy &middot; Word Search</div>
           <div class="card-title">Word Hunt</div>
-          <div class="card-desc">Ten brand-new words every week, hidden in the letter grid. Drag across the letters to catch them — forwards, backwards and diagonally — learn what each word means, and climb both the all-time and the weekly top 15.</div>
+          <div class="card-desc">This week&rsquo;s spelling words, hidden in the letter grid. Drag across the letters to catch them — forwards, backwards and diagonally — learn what each word means, and climb both the all-time and the weekly top 15.</div>
           <span class="play">PLAY ▶</span>
         </div>
       </a>
@@ -444,26 +443,10 @@
         <div class="card-body">
           <div class="card-tag">Literacy &middot; Crossword</div>
           <div class="card-title">Word Cross</div>
-          <div class="card-desc">The same weekly words, woven into a crossword — twelve of them, with the meanings as the clues. Read a clue, tap the squares and spell it out; every answer you get right locks in green and hands you letters for the words that cross it.</div>
+          <div class="card-desc">The same weekly words, woven into a crossword — twelve of them, with the meanings as the clues. Read a clue, tap the squares and spell it out; every answer you get right locks in green and hands you letters for the words that cross it. The word bank sits beside the grid to copy from — or take the Challenge with no word bank, for double points.</div>
           <span class="play">PLAY ▶</span>
         </div>
       </a>
-      </div>
-    </section>
-
-    <section class="term" id="term-books" data-term="books" style="--ta:#F2C14E">
-      <div class="term-head">
-        <div class="term-line"></div>
-        <div class="term-heading">
-          <div class="term-kicker">📚 Class Reads</div>
-          <h2 class="term-title">Books</h2>
-          <div class="term-focus">Our Year 6 class books &mdash; titles to be added</div>
-        </div>
-        <div class="term-count">0<span>games</span></div>
-      </div>
-      <p class="term-note">Step inside this year&rsquo;s stories.</p>
-      <div class="cards">
-        <div class="soon">🛠️ <b>Nothing here yet</b><span>The first Books game is on its way &mdash; check back soon!</span></div>
       </div>
     </section>
 
@@ -848,7 +831,7 @@ async function loadRecords(p){
   }
 })();
 
-// ---- curriculum term filter (All / Autumn / Spring / Summer 1 / Summer 2 / Books / World Cup) ----
+// ---- curriculum term filter (All / Every Week / Autumn / Spring / Summer 1 / Summer 2) ----
 (function(){
   var nav=$('termnav');
   if(!nav)return;
