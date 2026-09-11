@@ -358,6 +358,7 @@ function fillWeekPicker(){
     sel.appendChild(o);
   });
   sel.value=String(weekIdx);
+  $('foundval').textContent='0/'+WEEKS[weekIdx].words.length;
 }
 
 /* ================= GRID BUILDING ================= */
@@ -726,7 +727,7 @@ window.addEventListener('touchcancel',onUp);
 $('hintbtn').addEventListener('click',useHint);
 $('launchbtn').addEventListener('click',startGame);
 $('againbtn').addEventListener('click',startGame);
-$('weekpick').addEventListener('change',function(){weekIdx=parseInt(this.value,10)||0;});
+$('weekpick').addEventListener('change',function(){weekIdx=parseInt(this.value,10)||0;$('foundval').textContent='0/'+WEEKS[weekIdx].words.length;});
 
 Array.prototype.forEach.call(document.querySelectorAll('.diffbtn'),function(b){
   b.addEventListener('click',function(){

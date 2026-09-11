@@ -397,6 +397,7 @@ function fillWeekPicker(){
     sel.appendChild(o);
   });
   sel.value=String(weekIdx);
+  $('solvedval').textContent='0/'+WEEKS[weekIdx].words.length;
 }
 
 /* ================= CROSSWORD BUILDER =================
@@ -889,7 +890,7 @@ function rankFor(s){
 $('launchbtn').addEventListener('click',startGame);
 $('againbtn').addEventListener('click',startGame);
 $('closeclues').addEventListener('click',function(){$('cluesheet').classList.remove('show');});
-$('weekpick').addEventListener('change',function(){weekIdx=parseInt(this.value,10)||0;});
+$('weekpick').addEventListener('change',function(){weekIdx=parseInt(this.value,10)||0;$('solvedval').textContent='0/'+WEEKS[weekIdx].words.length;});
 Array.prototype.forEach.call(document.querySelectorAll('.diffbtn'),function(b){
   b.addEventListener('click',function(){
     Array.prototype.forEach.call(document.querySelectorAll('.diffbtn'),function(x){x.classList.remove('on');});
