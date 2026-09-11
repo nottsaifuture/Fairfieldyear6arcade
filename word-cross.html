@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Word Cross — Weekly Twelve</title>
+<title>Word Cross — Weekly Words</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -217,9 +217,9 @@
   <!-- START -->
   <div class="panel" id="startpanel">
     <div class="title">WORD<br>CROSS</div>
-    <div class="tagline">Twelve words a week, woven into a crossword. Read the clue, tap the squares and spell it out — every word you get right locks in green and gives you a letter towards the ones that cross it. The <b>word bank</b> sits beside the grid to copy the spelling from &mdash; or take the <b>Challenge</b> with no word bank at all, for double points.</div>
+    <div class="tagline">This week&rsquo;s spelling words, woven into a crossword. Read the clue, tap the squares and spell it out — every word you get right locks in green and gives you a letter towards the ones that cross it. The <b>word bank</b> sits beside the grid to copy the spelling from &mdash; or take the <b>Challenge</b> with no word bank at all, for double points.</div>
     <div class="chip-row">
-      <div class="chip">&#10005; <b>12 words</b> that interlock</div>
+      <div class="chip">&#10005; <b>Weekly words</b> that interlock</div>
       <div class="chip">&#128161; Clues are the meanings</div>
       <div class="chip">&#128221; <b>Word bank</b> to copy from</div>
       <div class="chip">&#9889; Speed &amp; streak bonuses</div>
@@ -289,13 +289,13 @@
 var $=function(id){return document.getElementById(id);};
 
 /* =======================================================================
-   THE WEEKLY WORD LISTS  —  TWELVE words per week
+   THE WEEKLY WORD LISTS
    -----------------------------------------------------------------------
    Add a new block at the TOP of this list every week, same shape:
 
      {start:'YYYY-MM-DD', title:'Week 2 - Something', words:[
         {w:'PARLIAMENT', d:'the group of people who make a country’s laws'},
-        ... twelve of them ...
+        ... as many as are on the weekly list ...
      ]},
 
    * start = the MONDAY the list goes live (the newest list whose start date
@@ -304,6 +304,17 @@ var $=function(id){return document.getElementById(id);};
    * d     = the crossword clue: a short kid-friendly meaning.
    ======================================================================= */
 var WEEKS=[
+  {start:'2026-09-07', title:'Week 2 · Final /um/ Sound', words:[
+    {w:'CHASM',      d:'a very deep crack or gap in the ground'},
+    {w:'PRISM',      d:'a clear shape that can split light into rainbow colours'},
+    {w:'SPASM',      d:'a sudden movement of a muscle that you cannot control'},
+    {w:'RHYTHM',     d:'a regular pattern of sounds or beats'},
+    {w:'SCHISM',     d:'a serious split between groups because they disagree'},
+    {w:'SARCASM',    d:'words that mock someone by saying the opposite of what is meant'},
+    {w:'PHANTASM',   d:'something imagined, like a ghost or dream'},
+    {w:'CATACLYSM',  d:'a sudden, violent event that causes great change or damage'},
+    {w:'ALGORITHM',  d:'a clear set of steps used to solve a problem'}
+  ]},
   {start:'2026-08-31', title:'Week 1 · Tricky Spellings', words:[
     {w:'SEVERAL',       d:'more than two, but not very many'},
     {w:'AVERAGE',       d:'the usual or middle amount'},
