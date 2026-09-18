@@ -79,26 +79,10 @@
     filter:drop-shadow(0 4px 20px rgba(242,193,78,.25));}
   .sub{color:var(--muted);font-size:16px;font-weight:600;margin-top:12px;max-width:480px;}
 
-  /* ---------- CURRICULUM TERM SECTIONS ---------- */
+  /* ---------- GAME SECTION ---------- */
   .terms{width:100%;max-width:1280px;z-index:2;display:flex;flex-direction:column;align-items:center;}
 
-  .termnav{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin-top:26px;
-    padding:10px;border-radius:999px;background:rgba(255,255,255,.04);
-    border:1.5px solid rgba(255,255,255,.09);}
-  .pill{--pa:var(--gold);font-family:'Orbitron',sans-serif;font-weight:700;font-size:11.5px;
-    letter-spacing:.1em;cursor:pointer;border-radius:999px;padding:9px 15px;
-    border:1.5px solid rgba(255,255,255,.14);background:rgba(0,0,0,.22);color:var(--muted);
-    transition:color .16s,border-color .16s,background .16s,transform .12s;display:flex;
-    align-items:center;gap:7px;}
-  .pill:hover{color:var(--ink);border-color:var(--pa);transform:translateY(-2px);}
-  .pill.active{background:var(--pa);border-color:var(--pa);color:#180d05;
-    box-shadow:0 6px 20px -4px var(--pa);}
-  .pill .pn{font-size:10px;opacity:.75;background:rgba(0,0,0,.22);border-radius:999px;
-    padding:1px 6px;}
-  .pill.active .pn{background:rgba(0,0,0,.16);opacity:.9;}
-
   .term{--ta:var(--gold);width:100%;margin-top:46px;scroll-margin-top:20px;}
-  .term.hidden{display:none;}
   .term-head{display:flex;align-items:flex-end;gap:16px;}
   .term-line{flex:0 0 6px;align-self:stretch;border-radius:999px;background:var(--ta);
     box-shadow:0 0 18px -2px var(--ta);min-height:64px;}
@@ -338,11 +322,6 @@
   table.rec td.best{font-family:'Orbitron',sans-serif;font-weight:900;color:var(--gold);}
   .rec-loading{text-align:center;color:var(--muted);padding:20px;font-weight:600;}
   .rec-empty{text-align:center;color:var(--muted);padding:14px;font-weight:600;font-size:14px;}
-  .soon{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:6px;
-    padding:38px 20px;border:2px dashed rgba(255,255,255,.16);border-radius:18px;
-    background:rgba(255,255,255,.03);text-align:center;font-size:15px;color:#cfc4e8;}
-  .soon b{font-family:'Cinzel',serif;font-size:19px;color:#fff;}
-  .soon span{font-size:13px;color:var(--muted);font-weight:600;}
 </style>
 </head>
 <body>
@@ -357,19 +336,10 @@
     <div class="kicker">Choose your game</div>
     <h1 id="bigtitle" title="Psst… try clicking me!">Year 6 Arcade</h1>
     <p class="hello" id="hello">🎮 Ready to play?</p>
-    <p class="sub">A brand-new arcade for Year 6 &mdash; starting with fresh spelling words every week — hunt them in the grid in Word Hunt, then solve them as a crossword in Word Cross — and every game we build together this year gets filed under its term so it follows what you are learning in class. Sign in with your usual name, and every game you play is saved to your record.</p>
+    <p class="sub">Fresh Year 6 spelling words every week &mdash; hunt them in the grid in Word Hunt, then solve them as a crossword in Word Cross. Sign in with your usual name, and every game you play is saved to your record.</p>
   </header>
 
   <main class="terms">
-  <nav class="termnav" id="termnav">
-    <button class="pill active" data-term="__all">✦ All 2</button>
-    <button class="pill" data-term="weekly" style="--pa:#FFC94A">🔍 Every Week <span class="pn">2</span></button>
-    <button class="pill" data-term="autumn" style="--pa:#52d68a">🌎 Autumn <span class="pn">0</span></button>
-    <button class="pill" data-term="spring" style="--pa:#36E2FF">🧭 Spring <span class="pn">0</span></button>
-    <button class="pill" data-term="summer1" style="--pa:#C0392B">👑 Summer 1 <span class="pn">0</span></button>
-    <button class="pill" data-term="summer2" style="--pa:#b28aff">🚀 Summer 2 <span class="pn">0</span></button>
-  </nav>
-
     <section class="term" id="term-weekly" data-term="weekly" style="--ta:#FFC94A">
       <div class="term-head">
         <div class="term-line"></div>
@@ -382,7 +352,7 @@
       </div>
       <p class="term-note">A brand-new set of words appears every week &mdash; find them in the letter grid in Word Hunt, then fit them together as a crossword in Word Cross. Both have their own weekly leaderboard.</p>
       <div class="cards">
-        <a class="card wordhunt" id="card-wordhunt" href="word-hunt.html?v=20260907">
+        <a class="card wordhunt" id="card-wordhunt" href="word-hunt.html?v=20260914">
         <span class="newbadge">✦ NEW!</span>
         <div class="lockmsg">🔒 Sign in first</div>
         <div class="card-art">
@@ -410,7 +380,7 @@
         </div>
       </a>
 
-        <a class="card wordcross" id="card-wordcross" href="word-cross.html?v=20260907">
+        <a class="card wordcross" id="card-wordcross" href="word-cross.html?v=20260914">
         <span class="newbadge">✦ NEW!</span>
         <div class="lockmsg">🔒 Sign in first</div>
         <div class="card-art">
@@ -447,70 +417,6 @@
           <span class="play">PLAY ▶</span>
         </div>
       </a>
-      </div>
-    </section>
-
-    <section class="term" id="term-autumn" data-term="autumn" style="--ta:#52d68a">
-      <div class="term-head">
-        <div class="term-line"></div>
-        <div class="term-heading">
-          <div class="term-kicker">🌎 Autumn Term</div>
-          <h2 class="term-title">Autumn</h2>
-          <div class="term-focus">Topic to be added</div>
-        </div>
-        <div class="term-count">0<span>games</span></div>
-      </div>
-      <p class="term-note">Games for the Autumn topic will appear here.</p>
-      <div class="cards">
-        <div class="soon">🛠️ <b>Nothing here yet</b><span>The first Autumn game is on its way &mdash; check back soon!</span></div>
-      </div>
-    </section>
-
-    <section class="term" id="term-spring" data-term="spring" style="--ta:#36E2FF">
-      <div class="term-head">
-        <div class="term-line"></div>
-        <div class="term-heading">
-          <div class="term-kicker">🧭 Spring Term</div>
-          <h2 class="term-title">Spring</h2>
-          <div class="term-focus">Topic to be added</div>
-        </div>
-        <div class="term-count">0<span>games</span></div>
-      </div>
-      <p class="term-note">Games for the Spring topic will appear here.</p>
-      <div class="cards">
-        <div class="soon">🛠️ <b>Nothing here yet</b><span>The first Spring game is on its way &mdash; check back soon!</span></div>
-      </div>
-    </section>
-
-    <section class="term" id="term-summer1" data-term="summer1" style="--ta:#C0392B">
-      <div class="term-head">
-        <div class="term-line"></div>
-        <div class="term-heading">
-          <div class="term-kicker">👑 Summer Term 1</div>
-          <h2 class="term-title">Summer 1</h2>
-          <div class="term-focus">Topic to be added</div>
-        </div>
-        <div class="term-count">0<span>games</span></div>
-      </div>
-      <p class="term-note">Games for the first half of Summer will appear here.</p>
-      <div class="cards">
-        <div class="soon">🛠️ <b>Nothing here yet</b><span>The first Summer 1 game is on its way &mdash; check back soon!</span></div>
-      </div>
-    </section>
-
-    <section class="term" id="term-summer2" data-term="summer2" style="--ta:#b28aff">
-      <div class="term-head">
-        <div class="term-line"></div>
-        <div class="term-heading">
-          <div class="term-kicker">🚀 Summer Term 2</div>
-          <h2 class="term-title">Summer 2</h2>
-          <div class="term-focus">Topic to be added</div>
-        </div>
-        <div class="term-count">0<span>games</span></div>
-      </div>
-      <p class="term-note">Games for the second half of Summer will appear here.</p>
-      <div class="cards">
-        <div class="soon">🛠️ <b>Nothing here yet</b><span>The first Summer 2 game is on its way &mdash; check back soon!</span></div>
       </div>
     </section>
 
@@ -828,36 +734,6 @@ async function loadRecords(p){
     e.style.animationDuration=(26+Math.random()*30)+'s';
     e.style.animationDelay=(-Math.random()*40)+'s';
     document.body.appendChild(e);
-  }
-})();
-
-// ---- curriculum term filter (All / Every Week / Autumn / Spring / Summer 1 / Summer 2) ----
-(function(){
-  var nav=$('termnav');
-  if(!nav)return;
-  var pills=nav.querySelectorAll('.pill');
-  var terms=document.querySelectorAll('.term');
-  function show(which){
-    for(var i=0;i<terms.length;i++){
-      terms[i].classList.toggle('hidden',which!=='__all'&&terms[i].getAttribute('data-term')!==which);
-    }
-    for(var j=0;j<pills.length;j++){
-      pills[j].classList.toggle('active',pills[j].getAttribute('data-term')===which);
-    }
-  }
-  for(var k=0;k<pills.length;k++){
-    (function(p){
-      p.addEventListener('click',function(){
-        var t=p.getAttribute('data-term');
-        show(t);
-        if(t!=='__all'){
-          var sec=document.getElementById('term-'+t);
-          if(sec)sec.scrollIntoView({behavior:'smooth',block:'start'});
-        }else{
-          window.scrollTo({top:0,behavior:'smooth'});
-        }
-      });
-    })(pills[k]);
   }
 })();
 
